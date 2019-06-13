@@ -23,9 +23,10 @@ namespace MeuTrabalho.Controllers
         {
             try
             {
-                SqlConnection connection = new SqlConnection("Server=saturnoserver.database.windows.net;Database=MEUDB;User=aclogin;Password=homework-jan31");
+                //SqlConnection connection = new SqlConnection("Server=saturnoserver.database.windows.net;Database=MEUDB;User=aclogin;Password=homework-jan31");                
+                SqlConnection connection = new SqlConnection("Server=.; Database=MEUDB; Trusted_Connection = True;");
                 SqlCommand cmd = new SqlCommand($"SELECT username FROM tbLogin WHERE email='{model.Email}' AND pwd='{model.Password}'", connection);
-
+                
                 connection.Open();
                 string username = (string)cmd.ExecuteScalar().ToString();
 

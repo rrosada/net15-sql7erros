@@ -6,16 +6,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MeuTrabalho.Models;
 using System.Data.SqlClient;
+using Dapper;
+using MeuTrabalho.Models.Repository;
 
 namespace MeuTrabalho.Controllers
 {
     public class HomeController : Controller, IDisposable
     {
-        SqlConnection connection;
+        private IAppRepository _repository = null;
 
-        public HomeController()
-        {
-            this.connection = new SqlConnection("Server=saturnoserver.database.windows.net;Database=MEUDB;User=app;Password=homework-jan31;Max Pool Size=2");
+        public HomeController(IAppRepository repository)
+        {            
+            _repository = repository;            
         }
 
         public IActionResult Index()
@@ -38,18 +40,27 @@ namespace MeuTrabalho.Controllers
         {
             ViewData["Message"] = "Your application description page.";
 
-            try
-            {
-                this.connection.Open();
+            _repository.Insert("about");
 
-                SqlCommand sql = new SqlCommand("INSERT tbLog VALUES ('about')", this.connection);
-                sql.ExecuteReader();                
-            }
-            catch(Exception ex)
+            /*
+            using (SqlConnection connection = new SqlConnection("Server=.; Database=MEUDB; Trusted_Connection = True;"))
             {
-                ViewData["Message"] = "ERROR ABOUT";
+                try
+                {
+                    
+                    
+                    connection.Open();
+                    SqlCommand sql = new SqlCommand("INSERT tbLog VALUES ('about')", connection);
+                    //sql.ExecuteReader();
+                    sql.ExecuteNonQuery();
+                    
+                }
+                catch (Exception ex)
+                {
+                    ViewData["Message"] = "ERROR ABOUT";
+                }
             }
-
+            */
             return View();
         }
 
@@ -57,19 +68,26 @@ namespace MeuTrabalho.Controllers
         {
             ViewData["Message"] = "Your contact page.";
 
-            try
-            {
-                SqlConnection conn1 = this.connection;
+            _repository.Insert("contact");
 
-                SqlCommand sql = new SqlCommand("INSERT tbLog VALUES ('contact')");
-                sql.Connection = conn1;
-
-                sql.ExecuteScalar();
-            }
-            catch(Exception ex)
+            /*
+            using (SqlConnection connection = new SqlConnection("Server=.; Database=MEUDB; Trusted_Connection = True;"))
             {
-                return RedirectToAction("Error");
+                try
+                {
+                    //connection.Open();
+                    //SqlCommand sql = new SqlCommand("INSERT tbLog VALUES ('contact')", connection);
+                    //sql.ExecuteScalar();
+                    //sql.ExecuteNonQuery();
+
+
+                }
+                catch (Exception ex)
+                {
+                    return RedirectToAction("Error");
+                }
             }
+            */
 
             return View();
         }
@@ -77,6 +95,6 @@ namespace MeuTrabalho.Controllers
         public IActionResult Error()
         {
             return View();
-        }
+        }        
     }
 }
